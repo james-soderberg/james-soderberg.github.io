@@ -1,79 +1,85 @@
-body {
-    font-family: Arial, sans-serif;
-}
-
-#game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-
-#game-board {
-    display: flex;
-    flex-wrap: wrap;
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
-    margin: 10px;
-    perspective: 500px;
-}
-
-.tile {
-    width: calc(100% / 10);
-    height: calc(100% / 10);
+* {
     box-sizing: border-box;
-    border: 1px solid black;
-    background-color: white;
-    display: inline-block;
+  }
+  
+  body {
+    background-color: black;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    color: white;
+    font-size: 48px;
+    margin-bottom: 20px;
+  }
+  
+  .game-container {
+    width: 100%;
+    height: 0;
+    padding-top: 100%;
     position: relative;
-    transition: transform 0.5s;
-    transform-style: preserve-3d;
-}
-
-.tile.flipped {
-    transform: rotateY(180deg);
-}
-
-.tile .front, .tile .back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .board {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;
-}
-
-.tile .back {
-    transform: rotateY(180deg);
-}
-
-.tile .back .distance {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    font-size: 20px;
-}
-
-.tile.winning .back {
-    background-image: url("fireworks.gif");
-    background-size: cover;
-}
-
-.play-again-button {
-    margin-top: 20px;
-    font-size: 20px;
-    padding: 10px 20px;
-    border-radius: 5px;
-    background-color: lightgreen;
-    border: none;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .tile {
+    width: calc(10% - 2px);
+    height: calc(10% - 2px);
+    margin: 1px;
+    background-color: #9c9c9c;
     cursor: pointer;
-}
-
-.animated {
-    transition: transform 0.5s;
-}
-
-.flipping {
-    transform: rotateY(90deg);
-}
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .tile.flipped {
+    background-color: white;
+  }
+  
+  .tile.flipped:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .tile:not(.flipped)::before {
+    content: "";
+    position: absolute;
+    left: calc(50% - 4px);
+    top: calc(50% - 4px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #9c9c9c;
+    opacity: 0.6;
+    z-index: -1;
+    animation: tile-float 3s ease-in-out infinite;
+  }
+  
+  @keyframes tile-float {
+    0% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(-5px, -5px);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
+  }
+  
