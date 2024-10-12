@@ -1,0 +1,64 @@
+.tile {
+    width: calc(100% / 10);
+    height: calc(100% / 10);
+    box-sizing: border-box;
+    border: 1px solid black;
+    background-color: white;
+    display: inline-block;
+    position: relative;
+}
+
+.tile.flipped {
+    transform: rotateY(180deg);
+}
+
+.tile .front, .tile .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+.tile .front {
+    z-index: 2;
+}
+
+.tile .back {
+    transform: rotateY(180deg);
+}
+
+.tile .back .distance {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.tile.winning .back {
+    background-image: url("fireworks.gif");
+    background-size: cover;
+}
+
+#game-board {
+    width: 500px;
+    height: 500px;
+    margin: 0 auto;
+    perspective: 500px;
+}
+
+#game-over {
+    display: none;
+    text-align: center;
+}
+
+.play-again-button {
+    margin-top: 20px;
+    font-size: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: lightgreen;
+    border: none;
+    cursor: pointer;
+}
