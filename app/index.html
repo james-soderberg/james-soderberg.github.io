@@ -1,18 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Gridle</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h1 class="title">Gridle</h1>
-      <div class="game-container">
-        <div class="board"></div>
-      </div>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Gridle (Find the X)</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>Gridle</h1>
+    <div id="game-container">
+        <div id="game-board">
+            <!-- Game board will be dynamically created by JavaScript -->
+        </div>
+
+        <div id="game-over">
+            <h2>You Win!</h2>
+            <p>Congratulations, you found the winning tile!</p>
+            <button id="play-again-button">Play Again</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
