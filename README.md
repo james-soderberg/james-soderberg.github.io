@@ -1,2 +1,2 @@
 # Gridle
-Find the X
+[CLICK HERE](https://james-soderberg.github.io/app/index.html)
