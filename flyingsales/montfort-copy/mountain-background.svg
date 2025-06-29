@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <filter id="snow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0"/>
+    </filter>
+    <radialGradient id="mountain" cx="50%" cy="100%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8"/>
+      <stop offset="50%" style="stop-color:#e8f4f8;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#c8e6f3;stop-opacity:0.4"/>
+    </radialGradient>
+    <filter id="snow2">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f0f8ff"/>
+  
+  <!-- Mountain ranges -->
+  <path d="M0 800 L0 600 Q300 400 600 500 T1200 600 L1200 800 Z" fill="url(#mountain)"/>
+  <path d="M0 800 L0 500 Q400 300 800 400 T1200 500 L1200 800 Z" fill="#ffffff" opacity="0.7"/>
+  <path d="M0 800 L0 400 Q500 200 1000 300 T1200 400 L1200 800 Z" fill="#f8f9fa" opacity="0.8"/>
+  
+  <!-- Snowflakes -->
+  <circle cx="100" cy="150" r="2" fill="white" filter="url(#snow)"/>
+  <circle cx="300" cy="100" r="1.5" fill="white" filter="url(#snow)"/>
+  <circle cx="500" cy="200" r="1" fill="white" filter="url(#snow)"/>
+  <circle cx="700" cy="80" r="2.5" fill="white" filter="url(#snow)"/>
+  <circle cx="900" cy="180" r="1.8" fill="white" filter="url(#snow)"/>
+  <circle cx="1100" cy="120" r="1.2" fill="white" filter="url(#snow)"/>
+  <circle cx="200" cy="250" r="1.5" fill="white" filter="url(#snow)"/>
+  <circle cx="400" cy="180" r="1" fill="white" filter="url(#snow)"/>
+  <circle cx="600" cy="300" r="2" fill="white" filter="url(#snow)"/>
+  <circle cx="800" cy="220" r="1.3" fill="white" filter="url(#snow)"/>
+  <circle cx="1000" cy="350" r="1.7" fill="white" filter="url(#snow)"/>
+  <circle cx="150" cy="400" r="1" fill="white" filter="url(#snow)"/>
+  <circle cx="350" cy="320" r="1.4" fill="white" filter="url(#snow)"/>
+  <circle cx="550" cy="450" r="1.8" fill="white" filter="url(#snow)"/>
+  <circle cx="750" cy="380" r="1.2" fill="white" filter="url(#snow)"/>
+  <circle cx="950" cy="500" r="1.6" fill="white" filter="url(#snow)"/>
+  <circle cx="1150" cy="420" r="1.1" fill="white" filter="url(#snow)"/>
+  
+  <!-- Additional snowflakes -->
+  <circle cx="50" cy="100" r="1" fill="white" filter="url(#snow2)"/>
+  <circle cx="150" cy="80" r="0.8" fill="white" filter="url(#snow2)"/>
+  <circle cx="250" cy="120" r="1.2" fill="white" filter="url(#snow2)"/>
+  <circle cx="350" cy="90" r="0.9" fill="white" filter="url(#snow2)"/>
+  <circle cx="450" cy="150" r="1.1" fill="white" filter="url(#snow2)"/>
+  <circle cx="550" cy="70" r="0.7" fill="white" filter="url(#snow2)"/>
+  <circle cx="650" cy="130" r="1" fill="white" filter="url(#snow2)"/>
+  <circle cx="750" cy="110" r="0.8" fill="white" filter="url(#snow2)"/>
+  <circle cx="850" cy="160" r="1.3" fill="white" filter="url(#snow2)"/>
+  <circle cx="950" cy="85" r="0.9" fill="white" filter="url(#snow2)"/>
+  <circle cx="1050" cy="140" r="1.1" fill="white" filter="url(#snow2)"/>
+  <circle cx="1150" cy="95" r="0.8" fill="white" filter="url(#snow2)"/>
+</svg> 
