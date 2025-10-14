@@ -856,6 +856,29 @@ body {
     align-items: flex-start;
 }
 
+.submit-btn {
+    padding: 8px 16px;
+    background: linear-gradient(45deg, #00d4ff, #0099cc);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(45deg, #0099cc, #007aa3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-container {

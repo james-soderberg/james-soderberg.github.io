@@ -377,6 +377,7 @@ function populateBusinessData() {
                     <option value="no">No</option>
                 </select>
                 <input type="email" class="email-input" placeholder="Enter customer email address" data-business-id="${index}">
+                <button class="submit-btn" data-business-id="${index}">Submit</button>
             </div>
         `;
         leadsContainer.appendChild(businessRow);
@@ -384,6 +385,9 @@ function populateBusinessData() {
     
     // Add event listeners for status dropdowns
     addStatusDropdownListeners();
+    
+    // Add event listeners for submit buttons
+    addSubmitButtonListeners();
 }
 
 function generateBusinessData() {
@@ -584,4 +588,42 @@ function getStatusDisplayName(status) {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+}
+
+function addSubmitButtonListeners() {
+    const submitButtons = document.querySelectorAll('.submit-btn');
+    
+    submitButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const businessId = this.getAttribute('data-business-id');
+            const status = document.querySelector(`.status-dropdown[data-business-id="${businessId}"]`).value;
+            const email = document.querySelector(`.email-input[data-business-id="${businessId}"]`).value;
+            const businessRow = this.closest('.business-row');
+            const businessName = businessRow.querySelector('.business-name').textContent;
+            
+            if (!status) {
+                showModernNotification('Please select a status first.');
+                return;
+            }
+            
+            if (status === 'sold' && !email) {
+                showModernNotification('Please enter customer email for sold leads.');
+                return;
+            }
+            
+            if (status === 'sold' && email && !isValidEmail(email)) {
+                showModernNotification('Please enter a valid email address.');
+                return;
+            }
+            
+            // Update status on server
+            updateLeadStatus(businessId, status, email);
+            
+            // Apply visual styling based on status
+            applyStatusStyling(businessRow, status);
+            
+            // Show notification
+            showModernNotification(`Status updated for ${businessName}: ${getStatusDisplayName(status)}`);
+        });
+    });
 } 
