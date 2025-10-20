@@ -377,7 +377,7 @@ function populateBusinessData() {
                     <option value="no">No</option>
                 </select>
                 <input type="email" class="email-input" placeholder="Enter customer email address" data-business-id="${index}">
-                <button class="submit-btn" data-business-id="${index}">Submit</button>
+                <button class="submit-btn" data-business-id="${index}" style="display: none;">Submit</button>
             </div>
         `;
         leadsContainer.appendChild(businessRow);
@@ -498,25 +498,23 @@ function addStatusDropdownListeners() {
         dropdown.addEventListener('change', function() {
             const status = this.value;
             const businessId = this.getAttribute('data-business-id');
+            const submitBtn = businessRow.querySelector('.submit-btn');
             
-            // Save status to localStorage
-            localStorage.setItem(`business_status_${businessId}`, status);
-            
-            // Show/hide email input based on status
+            // Show/hide email input and submit button based on status
             if (status === 'sold') {
                 emailInput.classList.add('show');
+                submitBtn.style.display = 'block';
                 emailInput.focus();
             } else {
                 emailInput.classList.remove('show');
                 emailInput.value = '';
-                localStorage.removeItem(`business_email_${businessId}`);
+                submitBtn.style.display = 'none';
+                
+                // Auto-save non-sold statuses immediately
+                updateLeadStatus(businessId, status, '');
+                applyStatusStyling(businessRow, status);
+                showModernNotification(`Status updated for ${businessName}: ${getStatusDisplayName(status)}`);
             }
-            
-            // Apply visual styling based on status
-            applyStatusStyling(businessRow, status);
-            
-            // Show notification
-            showModernNotification(`Status updated for ${businessName}: ${getStatusDisplayName(status)}`);
         });
     });
     
@@ -601,17 +599,17 @@ function addSubmitButtonListeners() {
             const businessRow = this.closest('.business-row');
             const businessName = businessRow.querySelector('.business-name').textContent;
             
-            if (!status) {
-                showModernNotification('Please select a status first.');
+            // Only handle "sold" status (submit button only shows for sold)
+            if (status !== 'sold') {
                 return;
             }
             
-            if (status === 'sold' && !email) {
+            if (!email) {
                 showModernNotification('Please enter customer email for sold leads.');
                 return;
             }
             
-            if (status === 'sold' && email && !isValidEmail(email)) {
+            if (!isValidEmail(email)) {
                 showModernNotification('Please enter a valid email address.');
                 return;
             }
@@ -623,7 +621,7 @@ function addSubmitButtonListeners() {
             applyStatusStyling(businessRow, status);
             
             // Show notification
-            showModernNotification(`Status updated for ${businessName}: ${getStatusDisplayName(status)}`);
+            showModernNotification(`Sale recorded for ${businessName}! Email notification sent.`);
         });
     });
 } 
