@@ -1,4 +1,7 @@
 // Modern Flying Sales Website JavaScript
+const API_BASE_URL = 'https://james-soderberg-github-io-fh2v-nmna1bm22.vercel.app/api';
+let authToken = localStorage.getItem('flyingSalesToken') || '';
+let currentUser = null;
 document.addEventListener('DOMContentLoaded', function() {
     // Check if user is already logged in
     checkLoginStatus();
@@ -242,10 +245,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Login and Authentication Functions
 function checkLoginStatus() {
-    const isLoggedIn = localStorage.getItem('flyingSalesLoggedIn') === 'true';
-    if (isLoggedIn) {
-        showAuthenticatedUI();
+    if (!authToken) {
+        return;
     }
+    // Verify token by attempting to load leads
+    fetch(`${API_BASE_URL}/leads`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    }).then(res => {
+        if (res.ok) {
+            showAuthenticatedUI();
+            loadBusinessData();
+        } else {
+            logout();
+        }
+    }).catch(() => logout());
 }
 
 function initializeLogin() {
@@ -277,23 +290,39 @@ function initializeLogin() {
         }
     });
 
-    // Handle login form submission
+    // Handle login form submission (backend auth)
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            
-            // Simple authentication - you can change these credentials
-            if (username === 'admin' && password === 'flying123') {
-                localStorage.setItem('flyingSalesLoggedIn', 'true');
-                modal.style.display = 'none';
-                showAuthenticatedUI();
-                showModernNotification('Login successful! Welcome to Flying Sales.');
-                loginForm.reset();
-            } else {
-                showModernNotification('Invalid credentials. Please try again.');
-            }
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+            fetch(`${API_BASE_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            }).then(r => r.json()).then(data => {
+                if (data && data.token) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('flyingSalesToken', authToken);
+                    modal.style.display = 'none';
+                    showAuthenticatedUI();
+                    showModernNotification('Login successful! Welcome to Flying Sales.');
+                    loginForm.reset();
+                    loadBusinessData();
+                } else {
+                    showModernNotification(data.error || 'Invalid credentials. Please try again.');
+                }
+            }).catch(() => {
+                showModernNotification('Login failed. Please try again.');
+            }).finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            });
         });
     }
 
@@ -301,9 +330,7 @@ function initializeLogin() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            localStorage.removeItem('flyingSalesLoggedIn');
-            showUnauthenticatedUI();
-            showModernNotification('Logged out successfully.');
+            logout();
         });
     }
 }
@@ -330,6 +357,14 @@ function showUnauthenticatedUI() {
     if (sellSection) sellSection.style.display = 'none';
 }
 
+function logout() {
+    authToken = '';
+    currentUser = null;
+    localStorage.removeItem('flyingSalesToken');
+    showUnauthenticatedUI();
+    showModernNotification('Logged out successfully.');
+}
+
 function initializeSellTab() {
     const sellTab = document.getElementById('sell-tab');
     const sellSection = document.getElementById('sell-section');
@@ -352,42 +387,46 @@ function showSellSection() {
 }
 
 function populateBusinessData() {
+    loadBusinessData();
+}
+
+function loadBusinessData() {
     const leadsContainer = document.getElementById('leads-container');
     if (!leadsContainer) return;
-    
-    // Check if data is already populated
-    if (leadsContainer.children.length > 0) return;
-    
-    // Generate 100 dummy business entries
-    const businessData = generateBusinessData();
-    
-    businessData.forEach((business, index) => {
-        const businessRow = document.createElement('div');
-        businessRow.className = 'business-row';
-        businessRow.innerHTML = `
-            <div class="business-name">${business.name}</div>
-            <div class="business-phone">${business.phone}</div>
-            <div class="business-address">${business.address}</div>
-            <div class="status-container">
-                <select class="status-dropdown" data-business-id="${index}">
-                    <option value="">Select Status</option>
-                    <option value="voicemail">Left Voicemail</option>
-                    <option value="maybe">Maybe (call back)</option>
-                    <option value="sold">Sold</option>
-                    <option value="no">No</option>
-                </select>
-                <input type="email" class="email-input" placeholder="Enter customer email address" data-business-id="${index}">
-                <button class="submit-btn" data-business-id="${index}" style="display: none;">Submit</button>
-            </div>
-        `;
-        leadsContainer.appendChild(businessRow);
-    });
-    
-    // Add event listeners for status dropdowns
-    addStatusDropdownListeners();
-    
-    // Add event listeners for submit buttons
-    addSubmitButtonListeners();
+    leadsContainer.innerHTML = '';
+    if (!authToken) return;
+    fetch(`${API_BASE_URL}/leads`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+    }).then(r => r.json()).then(businessData => {
+        if (!Array.isArray(businessData)) {
+            showModernNotification('Could not load leads.');
+            return;
+        }
+        businessData.forEach((business) => {
+            const businessRow = document.createElement('div');
+            businessRow.className = 'business-row';
+            businessRow.innerHTML = `
+                <div class="business-name">${business.business_name}</div>
+                <div class="business-phone">${business.phone_number}</div>
+                <div class="business-address">${business.address || ''}</div>
+                <div class="status-container">
+                    <select class="status-dropdown" data-business-id="${business.id}">
+                        <option value="">Select Status</option>
+                        <option value="voicemail" ${business.status === 'voicemail' ? 'selected' : ''}>Left Voicemail</option>
+                        <option value="maybe" ${business.status === 'maybe' ? 'selected' : ''}>Maybe (call back)</option>
+                        <option value="sold" ${business.status === 'sold' ? 'selected' : ''}>Sold</option>
+                        <option value="no" ${business.status === 'no' ? 'selected' : ''}>No</option>
+                    </select>
+                    <input type="email" class="email-input ${business.status === 'sold' ? 'show' : ''}" placeholder="Enter customer email address" data-business-id="${business.id}" value="${business.customer_email || ''}">
+                    <button class="submit-btn" data-business-id="${business.id}" style="display: ${business.status === 'sold' ? 'block' : 'none'};">Submit</button>
+                </div>
+            `;
+            leadsContainer.appendChild(businessRow);
+        });
+        addStatusDropdownListeners();
+        addSubmitButtonListeners();
+        initializeAdminControls();
+    }).catch(() => showModernNotification('Error loading leads.'));
 }
 
 function generateBusinessData() {
@@ -482,18 +521,7 @@ function addStatusDropdownListeners() {
         const businessRow = dropdown.closest('.business-row');
         const businessName = businessRow.querySelector('.business-name').textContent;
         
-        // Load saved status if exists
-        const savedStatus = localStorage.getItem(`business_status_${businessId}`);
-        if (savedStatus) {
-            dropdown.value = savedStatus;
-            if (savedStatus === 'sold') {
-                emailInput.classList.add('show');
-                const savedEmail = localStorage.getItem(`business_email_${businessId}`);
-                if (savedEmail) {
-                    emailInput.value = savedEmail;
-                }
-            }
-        }
+        // Remove localStorage preload; status is rendered from API
         
         dropdown.addEventListener('change', function() {
             const status = this.value;
@@ -523,12 +551,7 @@ function addStatusDropdownListeners() {
         emailInput.addEventListener('input', function() {
             const businessId = this.getAttribute('data-business-id');
             const email = this.value;
-            
-            if (email) {
-                localStorage.setItem(`business_email_${businessId}`, email);
-            } else {
-                localStorage.removeItem(`business_email_${businessId}`);
-            }
+            // No localStorage persistence; email is saved on submit/update
         });
         
         emailInput.addEventListener('blur', function() {
